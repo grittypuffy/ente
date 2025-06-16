@@ -40,8 +40,8 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ente-io/ente/main/server/q
 ```
 
 The above `curl` command pulls the Docker image, creates a directory `my-ente`
-in the current working directory and prompts to start the cluster, which upon
-entering `y`, starts all the containers required to run Ente.
+in the current working directory and prompts to start the Docker Compose cluster
+required to run Ente.
 
 ![quickstart](/quickstart.png)
 
