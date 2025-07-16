@@ -999,6 +999,10 @@ func setupAndStartCrons(userAuthRepo *repo.UserAuthRepository, publicCollectionR
 		emailNotificationCtrl.NudgePaidSubscriberForFamily()
 	})
 
+	scheduleAndRun(c, "@every 6h", func() {
+		emailNotificationCtrl.SendStorageLimitExceedingMails()
+	})
+
 	schedule(c, "@every 1m", func() {
 		pushController.SendPushes()
 	})
