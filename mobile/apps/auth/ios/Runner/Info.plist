@@ -89,6 +89,8 @@
 				<key>UIWindowSceneSessionRoleApplication</key>
 				<array>
 					<dict>
+						<key>UISceneClassName</key>
+						<string>UIWindowScene</string>
 						<key>UISceneConfigurationName</key>
 						<string>flutter</string>
 						<key>UISceneDelegateClassName</key>
