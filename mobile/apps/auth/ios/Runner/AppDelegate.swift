@@ -1,6 +1,5 @@
 import Flutter
 import UIKit
-import app_links
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
