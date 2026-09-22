@@ -65,11 +65,13 @@ class HomeEmptyStateWidget extends StatelessWidget {
                                   bgSvgPath,
                                   width: 224,
                                   height: 142,
+                                  excludeFromSemantics: true,
                                 ),
                               ),
                               Image.asset(
                                 'assets/onboarding-2.png',
                                 height: 188,
+                                excludeFromSemantics: true,
                               ),
                             ],
                           ),
