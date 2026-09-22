@@ -97,6 +97,7 @@ class _EmailEntryPageState extends State<EmailEntryPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: getAccountAppBarColor(context),
+          tooltip: context.strings.back,
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
