@@ -50,7 +50,6 @@ class OnboardingPage extends StatefulWidget {
 
 class _OnboardingPageState extends State<OnboardingPage>
     with WidgetsBindingObserver {
-  static const kDeveloperModeTapCountThreshold = 7;
   static const _featureCount = 3;
   static const _autoScrollInterval = Duration(seconds: 4);
 
@@ -58,7 +57,6 @@ class _OnboardingPageState extends State<OnboardingPage>
   late final PageController _pageController;
   Timer? _autoScrollTimer;
 
-  int _developerModeTapCount = 0;
   int _activeDotIndex = 0;
   int _currentPage = 0;
   bool _autoScrollDisabled = false;
@@ -178,115 +176,121 @@ class _OnboardingPageState extends State<OnboardingPage>
               ]
             : null,
       ),
-      body: GestureDetector(
-        onTap: () async => _handleDeveloperTap(context),
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 32),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    const SizedBox(height: 28),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  const SizedBox(height: 28),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildFeatureSlider(context),
+                        const SizedBox(height: 12),
+                        _buildDotsIndicator(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 580),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Row(
                         children: [
-                          _buildFeatureSlider(context),
-                          const SizedBox(height: 12),
-                          _buildDotsIndicator(),
+                          Expanded(
+                            child: RoundedButton(
+                              label: l10n.signUp,
+                              onPressed: _navigateToSignUpPage,
+                              type: RoundedButtonType.secondaryInverse,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: RoundedButton(
+                              label: l10n.logInLabel,
+                              onPressed: _navigateToSignInPage,
+                              type: RoundedButtonType.primaryInverse,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 48),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 580),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 28),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: RoundedButton(
-                                label: l10n.signUp,
-                                onPressed: _navigateToSignUpPage,
-                                type: RoundedButtonType.secondaryInverse,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: RoundedButton(
-                                label: l10n.logInLabel,
-                                onPressed: _navigateToSignInPage,
-                                type: RoundedButtonType.primaryInverse,
-                              ),
-                            ),
-                          ],
-                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: _optForOfflineMode,
+                    child: Text(
+                      l10n.useOffline,
+                      style: textTheme.bodyBold.copyWith(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    TextButton(
-                      onPressed: _optForOfflineMode,
-                      child: Text(
-                        l10n.useOffline,
-                        style: textTheme.bodyBold.copyWith(
-                          color: Colors.white.withValues(alpha: 0.85),
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.white,
-                        ),
+                  ),
+                  const SizedBox(height: 16),
+                  const DeveloperSettingsWidget(),
+                  // [Accessibility] Remove requirement for 7-tap for non-phantom
+                  // perception of developer settings for assistive technology users
+                  TextButton(
+                    onPressed: () => _openDeveloperSettings(context),
+                    child: Text(
+                      l10n.developerSettings,
+                      style: textTheme.bodyBold.copyWith(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    const DeveloperSettingsWidget(),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Future<void> _handleDeveloperTap(BuildContext context) async {
-    _developerModeTapCount++;
-    if (_developerModeTapCount >= kDeveloperModeTapCountThreshold) {
-      _developerModeTapCount = 0;
-      await showAlertBottomSheet(
-        context,
-        title: context.strings.developerSettings,
-        message: context.strings.developerSettingsWarning,
-        assetPath: 'assets/warning-grey.png',
-        isDismissible: false,
-        showCloseButton: false,
-        buttons: [
-          ButtonComponent(
-            label: context.strings.yes,
-            onTap: () async {
-              Navigator.of(context).pop();
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (BuildContext context) {
-                    return DeveloperSettingsPage(
-                      getCurrentEndpoint: () =>
-                          Configuration.instance.getHttpEndpoint(),
-                      setEndpoint: (url) async =>
-                          Configuration.instance.setHttpEndpoint(url),
-                    );
-                  },
-                ),
-              );
-              if (mounted) {
-                setState(() {});
-              }
-            },
-          ),
-        ],
-      );
-    }
+  Future<void> _openDeveloperSettings(BuildContext context) async {
+    await showAlertBottomSheet(
+      context,
+      title: context.strings.developerSettings,
+      message: context.strings.developerSettingsWarning,
+      assetPath: 'assets/warning-grey.png',
+      isDismissible: false,
+      showCloseButton: false,
+      buttons: [
+        ButtonComponent(
+          label: context.strings.yes,
+          onTap: () async {
+            Navigator.of(context).pop();
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (BuildContext context) {
+                  return DeveloperSettingsPage(
+                    getCurrentEndpoint: () =>
+                        Configuration.instance.getHttpEndpoint(),
+                    setEndpoint: (url) async =>
+                        Configuration.instance.setHttpEndpoint(url),
+                  );
+                },
+              ),
+            );
+            if (mounted) {
+              setState(() {});
+            }
+          },
+        ),
+      ],
+    );
   }
 
   Future<void> _optForOfflineMode() async {
