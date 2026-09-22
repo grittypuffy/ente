@@ -48,7 +48,8 @@ class OnboardingPage extends StatefulWidget {
   State<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingPageState extends State<OnboardingPage> {
+class _OnboardingPageState extends State<OnboardingPage>
+    with WidgetsBindingObserver {
   static const kDeveloperModeTapCountThreshold = 7;
   static const _featureCount = 3;
   static const _autoScrollInterval = Duration(seconds: 4);
@@ -75,7 +76,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
       if (!mounted) return;
       await autoLogoutAlert(context);
     });
-    _startAutoScroll();
+    WidgetsBinding.instance.addObserver(this);
+    _reconcileAutoScroll();
     if (widget.showOfflineKeyUnavailableDialog) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         unawaited(_showOfflineKeyUnavailableDialog());
@@ -85,7 +87,42 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   @override
+  void didChangeAccessibilityFeatures() {
+    if (mounted) {
+      setState(() {});
+      _reconcileAutoScroll();
+    }
+  }
+
+  // [Accessibility] On iOS, reduceMotion is NOT exposed via MediaQuery.disableAnimations, so WidgetsBinding is used for retrieving
+  bool get _prefersReducedMotion {
+    final f = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures;
+    return f.disableAnimations || f.reduceMotion;
+  }
+
+  // [Accessibility] Never auto-advance for screen-reader or motion-averse users, and never
+  // auto-advance once the user has manually swiped the carousel.
+  bool get _shouldAutoScroll {
+    final f = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures;
+    return !_autoScrollDisabled &&
+        !f.accessibleNavigation &&
+        !f.disableAnimations &&
+        !f.reduceMotion;
+  }
+
+  // [Accessibility] Start/stop are safe to call repeatedly, so this can be run on
+  // startup, on any accessibility settings change, and after a manual page change.
+  void _reconcileAutoScroll() {
+    if (_shouldAutoScroll) {
+      _startAutoScroll();
+    } else {
+      _stopAutoScroll();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _stopAutoScroll();
     _pageController.removeListener(_handlePageControllerScroll);
     _pageController.dispose();
@@ -323,7 +360,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   void _startAutoScroll() {
-    if (_autoScrollDisabled) {
+    if (!_shouldAutoScroll) {
       return;
     }
     _autoScrollTimer?.cancel();
@@ -369,7 +406,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
     }
     _pageController.animateToPage(
       targetPage,
-      duration: const Duration(milliseconds: 400),
+      duration: _prefersReducedMotion
+          ? Duration.zero
+          : const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
     );
   }
@@ -446,7 +485,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         activeSize: const Size(20, 10),
         spacing: const EdgeInsets.all(6),
       ),
-      animate: true,
+      animate: !_prefersReducedMotion,
       animationDuration: const Duration(milliseconds: 300),
       onTap: (index) {
         _autoScrollDisabled = true;
