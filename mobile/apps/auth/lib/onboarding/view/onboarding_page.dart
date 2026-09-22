@@ -521,7 +521,7 @@ class _FeatureItemWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Image.asset(assetPath, height: 188),
+        Image.asset(assetPath, height: 188, excludeFromSemantics: true),
         const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
