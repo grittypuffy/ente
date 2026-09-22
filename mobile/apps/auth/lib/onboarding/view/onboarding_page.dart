@@ -176,85 +176,103 @@ class _OnboardingPageState extends State<OnboardingPage>
               ]
             : null,
       ),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  const SizedBox(height: 28),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildFeatureSlider(context),
-                        const SizedBox(height: 12),
-                        _buildDotsIndicator(),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 580),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 28),
-                      child: Row(
+      // [Accessibility] Allow scrolling so large text never overflows the
+      // screen.
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            const SizedBox(height: 28),
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: RoundedButton(
-                              label: l10n.signUp,
-                              onPressed: _navigateToSignUpPage,
-                              type: RoundedButtonType.secondaryInverse,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: RoundedButton(
-                              label: l10n.logInLabel,
-                              onPressed: _navigateToSignInPage,
-                              type: RoundedButtonType.primaryInverse,
-                            ),
-                          ),
+                          _buildFeatureSlider(context),
+                          const SizedBox(height: 12),
+                          _buildDotsIndicator(),
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: _optForOfflineMode,
-                    child: Text(
-                      l10n.useOffline,
-                      style: textTheme.bodyBold.copyWith(
-                        color: Colors.white.withValues(alpha: 0.85),
-                        decoration: TextDecoration.underline,
-                        decorationColor: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const DeveloperSettingsWidget(),
-                  // [Accessibility] Remove requirement for 7-tap for non-phantom
-                  // perception of developer settings for assistive technology users
-                  TextButton(
-                    onPressed: () => _openDeveloperSettings(context),
-                    child: Text(
-                      l10n.developerSettings,
-                      style: textTheme.bodyBold.copyWith(
-                        color: Colors.white.withValues(alpha: 0.85),
-                        decoration: TextDecoration.underline,
-                        decorationColor: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 48),
+            // [Accessibility] Keep both buttons equal height when labels
+            // wrap.
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 580),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: RoundedButton(
+                          label: l10n.signUp,
+                          onPressed: _navigateToSignUpPage,
+                          type: RoundedButtonType.secondaryInverse,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: RoundedButton(
+                          label: l10n.logInLabel,
+                          onPressed: _navigateToSignInPage,
+                          type: RoundedButtonType.primaryInverse,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // [Accessibility] Keep wrapped labels centered.
+            Center(
+              child: TextButton(
+                onPressed: _optForOfflineMode,
+                child: Text(
+                  l10n.useOffline,
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyBold.copyWith(
+                    color: Colors.white.withValues(alpha: 0.85),
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const DeveloperSettingsWidget(),
+            // [Accessibility] Remove requirement for 7-tap for non-phantom
+            // perception of developer settings for assistive technology users
+            Center(
+              child: TextButton(
+                onPressed: () => _openDeveloperSettings(context),
+                child: Text(
+                  l10n.developerSettings,
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyBold.copyWith(
+                    color: Colors.white.withValues(alpha: 0.85),
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -429,8 +447,29 @@ class _OnboardingPageState extends State<OnboardingPage>
     final screenWidth = MediaQuery.of(context).size.width;
     final shouldApplyFade = screenWidth >= 800;
 
+    // [Accessibility] Grow with scaled text so slide titles are never
+    // clipped.
+    const imageHeight = 188.0;
+    final titleStyle = getEnteTextTheme(
+      context,
+    ).largeBold.copyWith(color: Colors.white);
+    final titleWidth = MediaQuery.sizeOf(context).width - 32;
+    final textScaler = MediaQuery.textScalerOf(context);
+    var tallestTitleHeight = 0.0;
+    for (final feature in features) {
+      final painter = TextPainter(
+        text: TextSpan(text: feature.$2, style: titleStyle),
+        textDirection: TextDirection.ltr,
+        textScaler: textScaler,
+      )..layout(maxWidth: titleWidth);
+      if (painter.height > tallestTitleHeight) {
+        tallestTitleHeight = painter.height;
+      }
+    }
+    final slideHeight = imageHeight + 12 + 16 + tallestTitleHeight;
+
     final pageView = SizedBox(
-      height: 320,
+      height: slideHeight,
       child: PageView.builder(
         controller: _pageController,
         itemBuilder: (context, index) {

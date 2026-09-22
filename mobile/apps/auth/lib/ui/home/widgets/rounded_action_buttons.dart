@@ -41,8 +41,9 @@ class RoundedButton extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         width: width,
-        height: 56,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 18),
+        // [Accessibility] Grow with text instead of clipping the label.
+        constraints: const BoxConstraints(minHeight: 56),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         decoration: ShapeDecoration(
           color: backgroundColor,
           shape: RoundedRectangleBorder(
@@ -50,8 +51,10 @@ class RoundedButton extends StatelessWidget {
           ),
         ),
         child: Center(
+          // [Accessibility] Center wrapped label lines.
           child: Text(
             label,
+            textAlign: TextAlign.center,
             style: textTheme.small.copyWith(
               color: textColor,
               fontWeight: FontWeight.w600,
