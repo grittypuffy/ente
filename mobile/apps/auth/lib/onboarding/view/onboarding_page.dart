@@ -178,14 +178,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   l10n.useOffline,
                   textAlign: TextAlign.center,
                   style: textTheme.bodyBold.copyWith(
-                    color: Colors.white.withValues(alpha: 0.85),
+                    color: Colors.white.withValues(alpha: 0.95),
                     decoration: TextDecoration.underline,
                     decorationColor: Colors.white,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             const DeveloperSettingsWidget(),
             // [Accessibility] Remove requirement for 7-tap for non-phantom
             // perception of developer settings for assistive technology users
@@ -195,7 +195,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Text(
                   l10n.developerSettings,
                   textAlign: TextAlign.center,
-                  style: textTheme.bodyBold.copyWith(
+                  style: textTheme.bodyMuted.copyWith(
                     color: Colors.white.withValues(alpha: 0.85),
                     decoration: TextDecoration.underline,
                     decorationColor: Colors.white,
