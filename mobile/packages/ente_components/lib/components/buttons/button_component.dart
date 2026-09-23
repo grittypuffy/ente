@@ -40,11 +40,17 @@ class ButtonComponent extends StatefulWidget {
     this.shouldShowSuccessConfirmation = false,
     this.progressStatus,
     this.leading,
+    this.linkUrl,
     this.dismissModalOnSuccess = false,
   });
 
   final String label;
   final FutureOr<void> Function()? onTap;
+
+  /// When non-null, the button is semantically exposed as an interactive link
+  /// pointing to [linkUrl] instead of as a button. Activation still flows
+  /// through [onTap].
+  final Uri? linkUrl;
   final ButtonComponentVariant variant;
   final ButtonComponentSize size;
   final ButtonComponentDensity density;
@@ -119,48 +125,61 @@ class _ButtonComponentState extends State<ButtonComponent>
     final resolvedColors = _colors(context);
     final enabled = _canHandleGestures;
     final verticalPadding = isInlineLink ? Spacing.xs : _buttonVerticalPadding;
+    final isLink = widget.linkUrl != null;
 
-    return MouseRegion(
-      cursor: enabled ? SystemMouseCursors.click : SystemMouseCursors.forbidden,
-      onEnter: (_) => _setHovered(true),
-      onExit: (_) => _setHovered(false),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: enabled ? _handleTap : null,
-        onTapDown: enabled ? (_) => _setPressed(true) : null,
-        onTapUp: enabled ? (_) => _releasePressed() : null,
-        onTapCancel: enabled ? _releasePressed : null,
-        child: AnimatedScale(
-          scale: _isPressed ? 0.98 : 1,
-          duration: const Duration(milliseconds: 120),
-          curve: Curves.easeOutCubic,
-          child: AnimatedContainer(
-            duration: Motion.standard,
-            curve: Curves.easeInOutCubic,
-            width: widget.size == ButtonComponentSize.large
-                ? double.infinity
-                : null,
-            decoration: BoxDecoration(
-              color: resolvedColors.background,
-              borderRadius: BorderRadius.circular(
-                isInlineLink ? 0 : Radii.button,
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isInlineLink ? 0 : Spacing.xl,
-                vertical: verticalPadding,
-              ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: isInlineLink ? 0 : _contentMinHeight,
+    return Semantics(
+      container: true,
+      button: isLink ? null : true,
+      link: isLink,
+      linkUrl: widget.linkUrl,
+      enabled: enabled,
+      label: widget.label,
+      child: MouseRegion(
+        cursor: enabled
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.forbidden,
+        onEnter: (_) => _setHovered(true),
+        onExit: (_) => _setHovered(false),
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: enabled ? _handleTap : null,
+          onTapDown: enabled ? (_) => _setPressed(true) : null,
+          onTapUp: enabled ? (_) => _releasePressed() : null,
+          onTapCancel: enabled ? _releasePressed : null,
+          child: ExcludeSemantics(
+            child: AnimatedScale(
+              scale: _isPressed ? 0.98 : 1,
+              duration: const Duration(milliseconds: 120),
+              curve: Curves.easeOutCubic,
+              child: AnimatedContainer(
+                duration: Motion.standard,
+                curve: Curves.easeInOutCubic,
+                width: widget.size == ButtonComponentSize.large
+                    ? double.infinity
+                    : null,
+                decoration: BoxDecoration(
+                  color: resolvedColors.background,
+                  borderRadius: BorderRadius.circular(
+                    isInlineLink ? 0 : Radii.button,
+                  ),
                 ),
-                child: AnimatedSwitcher(
-                  duration: Motion.quick,
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: _contentTransition,
-                  child: _content(context, resolvedColors.foreground),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isInlineLink ? 0 : Spacing.xl,
+                    vertical: verticalPadding,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: isInlineLink ? 0 : _contentMinHeight,
+                    ),
+                    child: AnimatedSwitcher(
+                      duration: Motion.quick,
+                      switchInCurve: Curves.easeOutCubic,
+                      switchOutCurve: Curves.easeInCubic,
+                      transitionBuilder: _contentTransition,
+                      child: _content(context, resolvedColors.foreground),
+                    ),
+                  ),
                 ),
               ),
             ),

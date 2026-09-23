@@ -146,6 +146,9 @@ class HomeEmptyStateWidget extends StatelessWidget {
                                 label: l10n.faq,
                                 size: ButtonComponentSize.small,
                                 variant: ButtonComponentVariant.link,
+                                linkUrl: Uri.parse(
+                                  'https://ente.com/help/auth/faq',
+                                ),
                                 onTap: () {
                                   PlatformUtil.openUrlInBrowser(
                                     'https://ente.com/help/auth/faq',

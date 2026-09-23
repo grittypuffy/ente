@@ -242,6 +242,116 @@ void main() {
     expect(find.text("Fail"), findsOneWidget);
   });
 
+  testWidgets("ButtonComponent exposes button semantics with a stable label", (
+    tester,
+  ) async {
+    final semanticsHandle = tester.ensureSemantics();
+
+    await tester.pumpWidget(
+      _wrap(ButtonComponent(label: "Save", onTap: () {})),
+    );
+
+    final node = tester.getSemantics(find.byType(ButtonComponent));
+    expect(
+      node,
+      isSemantics(label: "Save", isButton: true, hasTapAction: true),
+    );
+
+    semanticsHandle.dispose();
+  });
+
+  testWidgets("Link variant is still exposed as a button role", (tester) async {
+    final semanticsHandle = tester.ensureSemantics();
+
+    await tester.pumpWidget(
+      _wrap(
+        ButtonComponent(
+          label: "Sign up",
+          variant: ButtonComponentVariant.link,
+          onTap: () {},
+        ),
+      ),
+    );
+
+    final node = tester.getSemantics(find.byType(ButtonComponent));
+    expect(node, isSemantics(label: "Sign up", isButton: true, isLink: false));
+
+    semanticsHandle.dispose();
+  });
+
+  testWidgets("linkUrl opt-in exposes link semantics", (tester) async {
+    final semanticsHandle = tester.ensureSemantics();
+
+    await tester.pumpWidget(
+      _wrap(
+        ButtonComponent(
+          label: "FAQ",
+          variant: ButtonComponentVariant.link,
+          linkUrl: Uri.parse('https://ente.com/help/auth/faq'),
+          onTap: () {},
+        ),
+      ),
+    );
+
+    final node = tester.getSemantics(find.byType(ButtonComponent));
+    expect(node, isSemantics(label: "FAQ", isButton: false, isLink: true));
+    expect(
+      node.getSemanticsData().linkUrl,
+      Uri.parse('https://ente.com/help/auth/faq'),
+    );
+
+    semanticsHandle.dispose();
+  });
+
+  testWidgets(
+    "ButtonComponent semantics reflect the enabled state when disabled",
+    (tester) async {
+      final semanticsHandle = tester.ensureSemantics();
+
+      await tester.pumpWidget(
+        _wrap(ButtonComponent(label: "Save", isDisabled: true, onTap: () {})),
+      );
+
+      final node = tester.getSemantics(find.byType(ButtonComponent));
+      expect(
+        node,
+        isSemantics(
+          label: "Save",
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: false,
+        ),
+      );
+
+      semanticsHandle.dispose();
+    },
+  );
+
+  testWidgets("ButtonComponent keeps its label while loading", (tester) async {
+    final semanticsHandle = tester.ensureSemantics();
+    final completer = Completer<void>();
+
+    await tester.pumpWidget(
+      _wrap(ButtonComponent(label: "Uploading", onTap: () => completer.future)),
+    );
+
+    await tester.tap(find.text("Uploading"));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 200));
+
+    expect(find.byKey(const ValueKey('loading')), findsOneWidget);
+
+    final node = tester.getSemantics(find.byType(ButtonComponent));
+    expect(node, isSemantics(label: "Uploading", isButton: true));
+
+    completer.complete();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    semanticsHandle.dispose();
+  });
+
   testWidgets("IconButtonComponent resets state after async errors", (
     tester,
   ) async {
