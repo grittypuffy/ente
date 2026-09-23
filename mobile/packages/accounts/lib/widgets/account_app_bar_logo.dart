@@ -17,6 +17,7 @@ class AccountAppBarLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       'assets/svg/app-logo.svg',
+      excludeFromSemantics: true,
       colorFilter: ColorFilter.mode(
         getAccountAppBarColor(context),
         BlendMode.srcIn,

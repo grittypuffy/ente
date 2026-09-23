@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dots_indicator/dots_indicator.dart';
 import 'package:ente_accounts/pages/developer_settings_page.dart';
 import 'package:ente_accounts/pages/email_entry_page.dart';
 import 'package:ente_accounts/pages/login_page.dart';
@@ -32,7 +31,6 @@ import 'package:ente_ui/components/buttons/button_widget.dart';
 import 'package:ente_ui/components/buttons/models/button_result.dart';
 import 'package:ente_ui/components/buttons/models/button_type.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:local_auth/local_auth.dart';
 
@@ -48,34 +46,17 @@ class OnboardingPage extends StatefulWidget {
   State<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingPageState extends State<OnboardingPage>
-    with WidgetsBindingObserver {
-  static const _featureCount = 3;
-  static const _autoScrollInterval = Duration(seconds: 4);
-
+class _OnboardingPageState extends State<OnboardingPage> {
   late StreamSubscription<TriggerLogoutEvent> _triggerLogoutEvent;
-  late final PageController _pageController;
-  Timer? _autoScrollTimer;
-
-  int _activeDotIndex = 0;
-  int _currentPage = 0;
-  bool _autoScrollDisabled = false;
 
   @override
   void initState() {
-    const initialPage = _featureCount * 1000;
-    _pageController = PageController(initialPage: initialPage);
-    _pageController.addListener(_handlePageControllerScroll);
-    _currentPage = initialPage;
-    _activeDotIndex = _currentPage % _featureCount;
     _triggerLogoutEvent = Bus.instance.on<TriggerLogoutEvent>().listen((
       event,
     ) async {
       if (!mounted) return;
       await autoLogoutAlert(context);
     });
-    WidgetsBinding.instance.addObserver(this);
-    _reconcileAutoScroll();
     if (widget.showOfflineKeyUnavailableDialog) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         unawaited(_showOfflineKeyUnavailableDialog());
@@ -85,45 +66,7 @@ class _OnboardingPageState extends State<OnboardingPage>
   }
 
   @override
-  void didChangeAccessibilityFeatures() {
-    if (mounted) {
-      setState(() {});
-      _reconcileAutoScroll();
-    }
-  }
-
-  // [Accessibility] On iOS, reduceMotion is NOT exposed via MediaQuery.disableAnimations, so WidgetsBinding is used for retrieving
-  bool get _prefersReducedMotion {
-    final f = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures;
-    return f.disableAnimations || f.reduceMotion;
-  }
-
-  // [Accessibility] Never auto-advance for screen-reader or motion-averse users, and never
-  // auto-advance once the user has manually swiped the carousel.
-  bool get _shouldAutoScroll {
-    final f = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures;
-    return !_autoScrollDisabled &&
-        !f.accessibleNavigation &&
-        !f.disableAnimations &&
-        !f.reduceMotion;
-  }
-
-  // [Accessibility] Start/stop are safe to call repeatedly, so this can be run on
-  // startup, on any accessibility settings change, and after a manual page change.
-  void _reconcileAutoScroll() {
-    if (_shouldAutoScroll) {
-      _startAutoScroll();
-    } else {
-      _stopAutoScroll();
-    }
-  }
-
-  @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _stopAutoScroll();
-    _pageController.removeListener(_handlePageControllerScroll);
-    _pageController.dispose();
     _triggerLogoutEvent.cancel();
     super.dispose();
   }
@@ -185,25 +128,14 @@ class _OnboardingPageState extends State<OnboardingPage>
           children: [
             const SizedBox(height: 28),
             Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: constraints.maxHeight,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildFeatureSlider(context),
-                          const SizedBox(height: 12),
-                          _buildDotsIndicator(),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+              child: Center(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: _FeatureItemWidget(
+                    assetPath: 'assets/onboarding-1.png',
+                    title: l10n.featureBackupCodes,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 48),
@@ -378,163 +310,6 @@ class _OnboardingPageState extends State<OnboardingPage>
         ),
       ],
       isDismissible: false,
-    );
-  }
-
-  void _startAutoScroll() {
-    if (!_shouldAutoScroll) {
-      return;
-    }
-    _autoScrollTimer?.cancel();
-    _autoScrollTimer = Timer.periodic(_autoScrollInterval, (_) {
-      if (!_pageController.hasClients) {
-        return;
-      }
-      final nextPage = _currentPage + 1;
-      _pageController.animateToPage(
-        nextPage,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    });
-  }
-
-  void _stopAutoScroll() {
-    _autoScrollTimer?.cancel();
-    _autoScrollTimer = null;
-  }
-
-  void _handlePageControllerScroll() {
-    if (!_pageController.hasClients) {
-      return;
-    }
-
-    // userScrollDirection is idle during programmatic scrolling (animateToPage)
-    // but becomes forward/reverse when user manually drags
-    if (_pageController.position.userScrollDirection != ScrollDirection.idle) {
-      _autoScrollDisabled = true;
-      _stopAutoScroll();
-    }
-  }
-
-  void _animateToFeature(int index) {
-    if (!_pageController.hasClients) {
-      return;
-    }
-    final base = _currentPage - (_currentPage % _featureCount);
-    final targetPage = base + index;
-    if (targetPage == _currentPage) {
-      return;
-    }
-    _pageController.animateToPage(
-      targetPage,
-      duration: _prefersReducedMotion
-          ? Duration.zero
-          : const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  Widget _buildFeatureSlider(BuildContext context) {
-    final l10n = context.strings;
-    final features = [
-      ("assets/onboarding-1.png", l10n.featureBackupCodes),
-      ("assets/onboarding-2.png", l10n.featureSearchEtc),
-      ("assets/onboarding-3.png", l10n.featureOpenSource),
-    ];
-    assert(features.length == _featureCount);
-
-    final screenWidth = MediaQuery.of(context).size.width;
-    final shouldApplyFade = screenWidth >= 800;
-
-    // [Accessibility] Grow with scaled text so slide titles are never
-    // clipped.
-    const imageHeight = 188.0;
-    final titleStyle = getEnteTextTheme(
-      context,
-    ).largeBold.copyWith(color: Colors.white);
-    final titleWidth = MediaQuery.sizeOf(context).width - 32;
-    final textScaler = MediaQuery.textScalerOf(context);
-    var tallestTitleHeight = 0.0;
-    for (final feature in features) {
-      final painter = TextPainter(
-        text: TextSpan(text: feature.$2, style: titleStyle),
-        textDirection: TextDirection.ltr,
-        textScaler: textScaler,
-      )..layout(maxWidth: titleWidth);
-      if (painter.height > tallestTitleHeight) {
-        tallestTitleHeight = painter.height;
-      }
-    }
-    final slideHeight = imageHeight + 12 + 16 + tallestTitleHeight;
-
-    final pageView = SizedBox(
-      height: slideHeight,
-      child: PageView.builder(
-        controller: _pageController,
-        itemBuilder: (context, index) {
-          final feature = features[index % features.length];
-          return _FeatureItemWidget(assetPath: feature.$1, title: feature.$2);
-        },
-        onPageChanged: (index) {
-          setState(() {
-            _currentPage = index;
-            _activeDotIndex = index % _featureCount;
-          });
-          _startAutoScroll();
-        },
-      ),
-    );
-
-    if (!shouldApplyFade) {
-      return pageView;
-    }
-
-    const fadeWidth = 400.0;
-    final leftFadeEnd = fadeWidth / screenWidth;
-    final rightFadeStart = (screenWidth - fadeWidth) / screenWidth;
-
-    return ShaderMask(
-      shaderCallback: (Rect bounds) {
-        return LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: const [
-            Colors.transparent,
-            Colors.white,
-            Colors.white,
-            Colors.transparent,
-          ],
-          stops: [0.0, leftFadeEnd, rightFadeStart, 1.0],
-        ).createShader(bounds);
-      },
-      blendMode: BlendMode.dstIn,
-      child: pageView,
-    );
-  }
-
-  Widget _buildDotsIndicator() {
-    return DotsIndicator(
-      dotsCount: _featureCount,
-      position: _activeDotIndex.toDouble(),
-      decorator: DotsDecorator(
-        activeColor: Colors.white,
-        color: Colors.white.withValues(alpha: 0.32),
-        activeShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        size: const Size(10, 10),
-        activeSize: const Size(20, 10),
-        spacing: const EdgeInsets.all(6),
-      ),
-      animate: !_prefersReducedMotion,
-      animationDuration: const Duration(milliseconds: 300),
-      onTap: (index) {
-        _autoScrollDisabled = true;
-        _stopAutoScroll();
-        _animateToFeature(index);
-      },
     );
   }
 
