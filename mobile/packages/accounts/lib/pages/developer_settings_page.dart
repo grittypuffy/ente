@@ -75,14 +75,12 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                           ),
                         ),
                         const SizedBox(height: Spacing.sm),
-                        MergeSemantics(
-                          child: Semantics(
-                            label: context.strings.serverEndpoint,
-                            child: TextInputComponent(
-                              controller: _urlController,
-                              hintText: _currentEndpoint,
-                              autofocus: true,
-                            ),
+                        Semantics(
+                          label: context.strings.serverEndpoint,
+                          child: TextInputComponent(
+                            controller: _urlController,
+                            hintText: _currentEndpoint,
+                            autofocus: true,
                           ),
                         ),
                       ],
