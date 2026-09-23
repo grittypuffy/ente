@@ -439,9 +439,10 @@ class _BottomSheetCloseButton extends StatelessWidget {
       tooltip: tooltip,
       variant: IconButtonComponentVariant.circular,
       shouldSurfaceExecutionStates: false,
+      size: _closeButtonSize,
       icon: const HugeIcon(
         icon: HugeIcons.strokeRoundedCancel01,
-        size: IconSizes.small,
+        size: IconSizes.medium,
       ),
       onTap: () => _handleClose(context),
     );
@@ -480,6 +481,7 @@ class _BottomSheetActions extends StatelessWidget {
   }
 }
 
+const double _closeButtonSize = 48;
 const double _illustrationSlotBottomInset = 11;
 const double _desktopDialogMaxWidth = 440;
 
