@@ -61,29 +61,25 @@ class _BottomSheetHeaderComponent extends StatelessWidget {
 
     final colors = context.componentColors;
 
-    return SizedBox(
-      height: _headerHeight,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Text(
-              title!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: textAlign,
-              style: TextStyles.h2.copyWith(color: colors.textBase),
-            ),
+    // [Accessibility] Remove SizedBox and ellipsis to support dynamic font size
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Text(
+            title!,
+            textAlign: textAlign,
+            style: TextStyles.h2.copyWith(color: colors.textBase),
           ),
-          if (showCloseButton) const SizedBox(width: Spacing.md),
-          if (showCloseButton)
-            _BottomSheetCloseButton(
-              onClose: onClose,
-              closeResult: closeResult,
-              tooltip: closeTooltip,
-            ),
-        ],
-      ),
+        ),
+        if (showCloseButton) const SizedBox(width: Spacing.md),
+        if (showCloseButton)
+          _BottomSheetCloseButton(
+            onClose: onClose,
+            closeResult: closeResult,
+            tooltip: closeTooltip,
+          ),
+      ],
     );
   }
 }
@@ -484,7 +480,6 @@ class _BottomSheetActions extends StatelessWidget {
   }
 }
 
-const double _headerHeight = 38;
 const double _illustrationSlotBottomInset = 11;
 const double _desktopDialogMaxWidth = 440;
 
