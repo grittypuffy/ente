@@ -414,29 +414,30 @@ void main() {
     expect(find.byKey(const ValueKey('success')), findsOneWidget);
   });
 
-  testWidgets("IconButtonComponent exposes button semantics with a stable label", (
-    tester,
-  ) async {
-    final semanticsHandle = tester.ensureSemantics();
+  testWidgets(
+    "IconButtonComponent exposes button semantics with a stable label",
+    (tester) async {
+      final semanticsHandle = tester.ensureSemantics();
 
-    await tester.pumpWidget(
-      _wrap(
-        IconButtonComponent(
-          icon: const Icon(Icons.close),
-          tooltip: "Close",
-          onTap: () {},
+      await tester.pumpWidget(
+        _wrap(
+          IconButtonComponent(
+            icon: const Icon(Icons.close),
+            tooltip: "Close",
+            onTap: () {},
+          ),
         ),
-      ),
-    );
+      );
 
-    final node = tester.getSemantics(find.byType(IconButtonComponent));
-    expect(
-      node,
-      isSemantics(label: "Close", isButton: true, hasTapAction: true),
-    );
+      final node = tester.getSemantics(find.byType(IconButtonComponent));
+      expect(
+        node,
+        isSemantics(label: "Close", isButton: true, hasTapAction: true),
+      );
 
-    semanticsHandle.dispose();
-  });
+      semanticsHandle.dispose();
+    },
+  );
 
   testWidgets("IconButtonComponent linkUrl opt-in exposes link semantics", (
     tester,
@@ -471,10 +472,7 @@ void main() {
 
       await tester.pumpWidget(
         _wrap(
-          IconButtonComponent(
-            icon: const Icon(Icons.close),
-            tooltip: "Close",
-          ),
+          const IconButtonComponent(icon: Icon(Icons.close), tooltip: "Close"),
         ),
       );
 
