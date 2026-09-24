@@ -42,6 +42,7 @@ class ButtonComponent extends StatefulWidget {
     this.leading,
     this.linkUrl,
     this.dismissModalOnSuccess = false,
+    this.semanticsIdentifier,
   });
 
   final String label;
@@ -63,6 +64,8 @@ class ButtonComponent extends StatefulWidget {
 
   // Only popup routes such as dialogs and sheets are dismissed.
   final bool dismissModalOnSuccess;
+
+  final String? semanticsIdentifier;
 
   @override
   State<ButtonComponent> createState() => _ButtonComponentState();
@@ -134,6 +137,7 @@ class _ButtonComponentState extends State<ButtonComponent>
       linkUrl: widget.linkUrl,
       enabled: enabled,
       label: widget.label,
+      identifier: widget.semanticsIdentifier,
       child: MouseRegion(
         cursor: enabled
             ? SystemMouseCursors.click

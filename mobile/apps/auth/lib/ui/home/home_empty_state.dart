@@ -98,46 +98,40 @@ class HomeEmptyStateWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           if (PlatformDetector.isMobile()) ...[
-                            Semantics(
-                              identifier: 'auth_empty_scan',
-                              child: ButtonComponent(
-                                variant: ButtonComponentVariant.primary,
-                                leading: const HugeIcon(
-                                  icon: HugeIcons.strokeRoundedQrCode,
-                                  size: IconSizes.medium,
-                                ),
-                                label: l10n.scanAQrCode,
-                                onTap: onScanTap,
+                            ButtonComponent(
+                              variant: ButtonComponentVariant.primary,
+                              leading: const HugeIcon(
+                                icon: HugeIcons.strokeRoundedQrCode,
+                                size: IconSizes.medium,
                               ),
+                              label: l10n.scanAQrCode,
+                              semanticsIdentifier: 'auth_empty_scan',
+                              onTap: onScanTap,
                             ),
                           ],
                           const SizedBox(height: Spacing.md),
                           // [Accessibility] Users should be allowed to import from gallery
                           //without traversing scan QR even for mobile than restrict it for
                           // desktop
-                          Semantics(
-                            identifier: 'auth_empty_gallery',
-                            child: ButtonComponent(
-                              leading: const HugeIcon(
-                                icon: HugeIcons.strokeRoundedAlbum02,
-                                size: IconSizes.medium,
-                              ),
-                              label: l10n.importFromGallery,
-                              onTap: onImportImageTap,
+                          ButtonComponent(
+                            leading: const HugeIcon(
+                              icon: HugeIcons.strokeRoundedAlbum02,
+                              size: IconSizes.medium,
                             ),
+                            label: l10n.importFromGallery,
+                            semanticsIdentifier: 'auth_empty_gallery',
+                            onTap: onImportImageTap,
                           ),
                           const SizedBox(height: Spacing.md),
-                          Semantics(
-                            identifier: 'auth_empty_manual_setup',
-                            child: ButtonComponent(
-                              leading: const HugeIcon(
-                                icon: HugeIcons.strokeRoundedKey01,
-                                size: IconSizes.medium,
-                              ),
-                              label: l10n.importEnterSetupKey,
-                              variant: ButtonComponentVariant.secondary,
-                              onTap: onManuallySetupTap,
+                          ButtonComponent(
+                            leading: const HugeIcon(
+                              icon: HugeIcons.strokeRoundedKey01,
+                              size: IconSizes.medium,
                             ),
+                            label: l10n.importEnterSetupKey,
+                            variant: ButtonComponentVariant.secondary,
+                            semanticsIdentifier: 'auth_empty_manual_setup',
+                            onTap: onManuallySetupTap,
                           ),
                           const SizedBox(height: Spacing.sm),
                           Row(
