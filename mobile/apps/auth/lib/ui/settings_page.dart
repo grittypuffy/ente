@@ -177,15 +177,13 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget _closeButton(BuildContext context) {
-    return Semantics(
-      identifier: 'auth_settings_close',
-      child: IconButtonComponent(
-        tooltip: context.strings.close,
-        variant: IconButtonComponentVariant.unfilled,
-        shouldSurfaceExecutionStates: false,
-        icon: const HugeIcon(icon: HugeIcons.strokeRoundedCancel01),
-        onTap: () => scaffoldKey.currentState?.closeDrawer(),
-      ),
+    return IconButtonComponent(
+      tooltip: context.strings.close,
+      variant: IconButtonComponentVariant.unfilled,
+      shouldSurfaceExecutionStates: false,
+      semanticsIdentifier: 'auth_settings_close',
+      icon: const HugeIcon(icon: HugeIcons.strokeRoundedCancel01),
+      onTap: () => scaffoldKey.currentState?.closeDrawer(),
     );
   }
 

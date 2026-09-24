@@ -19,25 +19,21 @@ class SortCodeMenuWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.strings;
-    return Semantics(
-      button: true,
-      label: l10n.editOrder,
-      identifier: 'auth_sort_codes',
-      child: IconButtonComponent(
-        variant: IconButtonComponentVariant.unfilled,
-        shouldSurfaceExecutionStates: false,
-        tooltip: l10n.editOrder,
-        icon: SvgPicture.asset(
-          'assets/svg/filter-icon.svg',
-          width: IconSizes.medium,
-          height: IconSizes.medium,
-          colorFilter: ColorFilter.mode(
-            iconColor ?? context.componentColors.textBase,
-            BlendMode.srcIn,
-          ),
+    return IconButtonComponent(
+      variant: IconButtonComponentVariant.unfilled,
+      shouldSurfaceExecutionStates: false,
+      semanticsIdentifier: 'auth_sort_codes',
+      tooltip: l10n.editOrder,
+      icon: SvgPicture.asset(
+        'assets/svg/filter-icon.svg',
+        width: IconSizes.medium,
+        height: IconSizes.medium,
+        colorFilter: ColorFilter.mode(
+          iconColor ?? context.componentColors.textBase,
+          BlendMode.srcIn,
         ),
-        onTap: () => _showSortOptions(context),
       ),
+      onTap: () => _showSortOptions(context),
     );
   }
 

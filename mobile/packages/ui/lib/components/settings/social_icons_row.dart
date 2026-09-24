@@ -14,21 +14,18 @@ class SocialIconsRow extends StatelessWidget {
       runSpacing: Spacing.xs,
       children: _socialLinks
           .map(
-            (link) => Semantics(
-              label: link.label,
-              button: true,
-              child: IconButtonComponent(
-                tooltip: link.label,
-                shouldSurfaceExecutionStates: false,
-                icon: HugeIcon(
-                  icon: link.icon,
-                  size: IconSizes.small,
-                  strokeWidth: 1.6,
-                ),
-                onTap: () => launchUrlString(
-                  link.url,
-                  mode: LaunchMode.externalApplication,
-                ),
+            (link) => IconButtonComponent(
+              tooltip: link.label,
+              linkUrl: Uri.parse(link.url),
+              shouldSurfaceExecutionStates: false,
+              icon: HugeIcon(
+                icon: link.icon,
+                size: IconSizes.small,
+                strokeWidth: 1.6,
+              ),
+              onTap: () => launchUrlString(
+                link.url,
+                mode: LaunchMode.externalApplication,
               ),
             ),
           )

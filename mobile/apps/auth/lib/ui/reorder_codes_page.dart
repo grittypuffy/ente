@@ -49,18 +49,15 @@ class _ReorderCodesPageState extends State<ReorderCodesPage> {
             actions: [
               Padding(
                 padding: const EdgeInsets.only(right: Spacing.sm),
-                child: Semantics(
-                  button: true,
-                  identifier: 'auth_reorder_save',
-                  child: IconButtonComponent(
-                    icon: const Icon(
-                      Icons.check_rounded,
-                      size: IconSizes.medium,
-                    ),
-                    variant: IconButtonComponentVariant.unfilled,
-                    tooltip: context.strings.save,
-                    onTap: hasChanged ? _save : null,
+                child: IconButtonComponent(
+                  icon: const Icon(
+                    Icons.check_rounded,
+                    size: IconSizes.medium,
                   ),
+                  variant: IconButtonComponentVariant.unfilled,
+                  tooltip: context.strings.save,
+                  semanticsIdentifier: 'auth_reorder_save',
+                  onTap: hasChanged ? _save : null,
                 ),
               ),
             ],

@@ -69,18 +69,15 @@ class _CustomIconPageState extends State<CustomIconPage> {
             actions: [
               Padding(
                 padding: const EdgeInsets.only(right: Spacing.sm),
-                child: Semantics(
-                  button: true,
-                  identifier: 'auth_icon_search_toggle',
-                  child: IconButtonComponent(
-                    variant: IconButtonComponentVariant.unfilled,
-                    tooltip: context.strings.search,
-                    icon: Icon(
-                      _showSearchBox ? Icons.close : Icons.search,
-                      size: IconSizes.medium,
-                    ),
-                    onTap: _toggleSearch,
+                child: IconButtonComponent(
+                  variant: IconButtonComponentVariant.unfilled,
+                  tooltip: context.strings.search,
+                  semanticsIdentifier: 'auth_icon_search_toggle',
+                  icon: Icon(
+                    _showSearchBox ? Icons.close : Icons.search,
+                    size: IconSizes.medium,
                   ),
+                  onTap: _toggleSearch,
                 ),
               ),
             ],

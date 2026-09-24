@@ -413,6 +413,111 @@ void main() {
 
     expect(find.byKey(const ValueKey('success')), findsOneWidget);
   });
+
+  testWidgets("IconButtonComponent exposes button semantics with a stable label", (
+    tester,
+  ) async {
+    final semanticsHandle = tester.ensureSemantics();
+
+    await tester.pumpWidget(
+      _wrap(
+        IconButtonComponent(
+          icon: const Icon(Icons.close),
+          tooltip: "Close",
+          onTap: () {},
+        ),
+      ),
+    );
+
+    final node = tester.getSemantics(find.byType(IconButtonComponent));
+    expect(
+      node,
+      isSemantics(label: "Close", isButton: true, hasTapAction: true),
+    );
+
+    semanticsHandle.dispose();
+  });
+
+  testWidgets("IconButtonComponent linkUrl opt-in exposes link semantics", (
+    tester,
+  ) async {
+    final semanticsHandle = tester.ensureSemantics();
+
+    await tester.pumpWidget(
+      _wrap(
+        IconButtonComponent(
+          icon: const Icon(Icons.open_in_new),
+          tooltip: "Discord",
+          linkUrl: Uri.parse('https://ente.com/discord'),
+          onTap: () {},
+        ),
+      ),
+    );
+
+    final node = tester.getSemantics(find.byType(IconButtonComponent));
+    expect(node, isSemantics(label: "Discord", isButton: false, isLink: true));
+    expect(
+      node.getSemanticsData().linkUrl,
+      Uri.parse('https://ente.com/discord'),
+    );
+
+    semanticsHandle.dispose();
+  });
+
+  testWidgets(
+    "IconButtonComponent semantics reflect the enabled state when disabled",
+    (tester) async {
+      final semanticsHandle = tester.ensureSemantics();
+
+      await tester.pumpWidget(
+        _wrap(
+          IconButtonComponent(
+            icon: const Icon(Icons.close),
+            tooltip: "Close",
+          ),
+        ),
+      );
+
+      final node = tester.getSemantics(find.byType(IconButtonComponent));
+      expect(
+        node,
+        isSemantics(
+          label: "Close",
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: false,
+        ),
+      );
+
+      semanticsHandle.dispose();
+    },
+  );
+
+  testWidgets(
+    "IconButtonComponent announces tooltip text once via label only",
+    (tester) async {
+      final semanticsHandle = tester.ensureSemantics();
+
+      await tester.pumpWidget(
+        _wrap(
+          IconButtonComponent(
+            icon: const Icon(Icons.close),
+            tooltip: "Close",
+            onTap: () {},
+          ),
+        ),
+      );
+
+      final node = tester.getSemantics(find.byType(IconButtonComponent));
+      expect(node.getSemanticsData().tooltip, '');
+      expect(
+        node,
+        isSemantics(label: "Close", isButton: true, hasTapAction: true),
+      );
+
+      semanticsHandle.dispose();
+    },
+  );
 }
 
 Widget _wrap(

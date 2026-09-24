@@ -31,6 +31,8 @@ class IconButtonComponent extends StatefulWidget {
     this.tooltip,
     this.size = _defaultButtonSize,
     this.iconSize = _defaultIconSize,
+    this.semanticsIdentifier,
+    this.linkUrl,
   });
 
   final Widget icon;
@@ -42,6 +44,12 @@ class IconButtonComponent extends StatefulWidget {
   final String? tooltip;
   final double size;
   final double iconSize;
+  final String? semanticsIdentifier;
+
+  /// When non-null, the button is semantically exposed as an interactive link
+  /// pointing to [linkUrl] instead of as a button. Activation still flows
+  /// through [onTap].
+  final Uri? linkUrl;
 
   @override
   State<IconButtonComponent> createState() => _IconButtonComponentState();
@@ -87,6 +95,7 @@ class _IconButtonComponentState extends State<IconButtonComponent>
   @override
   Widget build(BuildContext context) {
     final enabled = _canHandleGestures;
+    final isLink = widget.linkUrl != null;
     final colors = _colors(context);
     final radius = widget.variant == IconButtonComponentVariant.circular
         ? BorderRadius.circular(35)
@@ -105,28 +114,30 @@ class _IconButtonComponentState extends State<IconButtonComponent>
           onTapDown: enabled ? _handleTapDown : null,
           onTapUp: enabled ? (_) => _setPressed(false) : null,
           onTapCancel: enabled ? () => _setPressed(false) : null,
-          child: AnimatedScale(
-            scale: enabled && _isPressed ? 0.98 : 1,
-            duration: const Duration(milliseconds: 120),
-            curve: Curves.easeOutCubic,
-            child: AnimatedContainer(
-              key: const ValueKey('icon-button-surface'),
-              duration: Motion.quick,
-              curve: Curves.easeInOutCubic,
-              width: widget.size,
-              height: widget.size,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: colors.background,
-                borderRadius: radius,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(Spacing.sm),
-                child: AnimatedSwitcher(
-                  duration: Motion.quick,
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  child: _content(colors.foreground),
+          child: ExcludeSemantics(
+            child: AnimatedScale(
+              scale: enabled && _isPressed ? 0.98 : 1,
+              duration: const Duration(milliseconds: 120),
+              curve: Curves.easeOutCubic,
+              child: AnimatedContainer(
+                key: const ValueKey('icon-button-surface'),
+                duration: Motion.quick,
+                curve: Curves.easeInOutCubic,
+                width: widget.size,
+                height: widget.size,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: colors.background,
+                  borderRadius: radius,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(Spacing.sm),
+                  child: AnimatedSwitcher(
+                    duration: Motion.quick,
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    child: _content(colors.foreground),
+                  ),
                 ),
               ),
             ),
@@ -136,10 +147,23 @@ class _IconButtonComponentState extends State<IconButtonComponent>
     );
 
     if (widget.tooltip != null) {
-      button = Tooltip(message: widget.tooltip!, child: button);
+      button = Tooltip(
+        message: widget.tooltip!,
+        excludeFromSemantics: true,
+        child: button,
+      );
     }
 
-    return button;
+    return Semantics(
+      container: true,
+      button: isLink ? null : true,
+      link: isLink,
+      linkUrl: widget.linkUrl,
+      enabled: enabled,
+      label: widget.tooltip,
+      identifier: widget.semanticsIdentifier,
+      child: button,
+    );
   }
 
   void _setHovered(bool value) {
