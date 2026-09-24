@@ -110,19 +110,22 @@ class HomeEmptyStateWidget extends StatelessWidget {
                                 onTap: onScanTap,
                               ),
                             ),
-                          ] else ...[
-                            Semantics(
-                              identifier: 'auth_empty_gallery',
-                              child: ButtonComponent(
-                                leading: const HugeIcon(
-                                  icon: HugeIcons.strokeRoundedAlbum02,
-                                  size: IconSizes.medium,
-                                ),
-                                label: l10n.importFromGallery,
-                                onTap: onImportImageTap,
-                              ),
-                            ),
                           ],
+                          const SizedBox(height: Spacing.md),
+                          // [Accessibility] Users should be allowed to import from gallery
+                          //without traversing scan QR even for mobile than restrict it for
+                          // desktop
+                          Semantics(
+                            identifier: 'auth_empty_gallery',
+                            child: ButtonComponent(
+                              leading: const HugeIcon(
+                                icon: HugeIcons.strokeRoundedAlbum02,
+                                size: IconSizes.medium,
+                              ),
+                              label: l10n.importFromGallery,
+                              onTap: onImportImageTap,
+                            ),
+                          ),
                           const SizedBox(height: Spacing.md),
                           Semantics(
                             identifier: 'auth_empty_manual_setup',
