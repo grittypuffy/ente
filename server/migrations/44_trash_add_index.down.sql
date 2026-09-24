@@ -1,1 +1,0 @@
-DROP INDEX IF NOT EXISTS trash_user_id_and_updated_at_index;

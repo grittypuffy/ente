@@ -1,1 +1,0 @@
-DROP INDEX IF EXISTS remote_store_custom_domain_unique_idx;

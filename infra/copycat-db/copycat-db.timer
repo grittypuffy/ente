@@ -1,8 +1,0 @@
-[Unit]
-Description=Schedule copycat-db
-
-[Timer]
-OnCalendar=Daily
-
-[Install]
-WantedBy=timers.target

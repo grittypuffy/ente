@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS trash_user_id_and_updated_at_index ON trash (user_id, updated_at);

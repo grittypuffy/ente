@@ -1,3 +1,0 @@
-# Set line endings of shell scripts to LF, even on Windows, otherwise execution
-# within Docker fails.
-*.sh text eol=lf

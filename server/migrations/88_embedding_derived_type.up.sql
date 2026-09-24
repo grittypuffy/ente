@@ -1,1 +1,0 @@
-ALTER TYPE model ADD VALUE IF NOT EXISTS 'derived';

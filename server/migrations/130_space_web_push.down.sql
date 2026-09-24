@@ -1,2 +1,0 @@
-DROP TRIGGER IF EXISTS update_space_web_push_subscriptions_updated_at ON space_web_push_subscriptions;
-DROP TABLE IF EXISTS space_web_push_subscriptions;
