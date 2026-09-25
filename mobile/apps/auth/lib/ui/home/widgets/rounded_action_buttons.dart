@@ -9,6 +9,7 @@ class RoundedButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final double? width;
   final RoundedButtonType type;
+  final Widget? leading;
 
   const RoundedButton({
     super.key,
@@ -16,6 +17,7 @@ class RoundedButton extends StatelessWidget {
     required this.onPressed,
     this.width,
     this.type = RoundedButtonType.primary,
+    this.leading,
   });
 
   @override
@@ -37,28 +39,50 @@ class RoundedButton extends StatelessWidget {
       ),
     };
 
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: width,
-        // [Accessibility] Grow with text instead of clipping the label.
-        constraints: const BoxConstraints(minHeight: 56),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-        decoration: ShapeDecoration(
-          color: backgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        child: Center(
-          // [Accessibility] Center wrapped label lines.
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: textTheme.small.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.w600,
+    final labelWidget = Text(
+      label,
+      textAlign: TextAlign.center,
+      style: textTheme.small.copyWith(
+        color: textColor,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+    final content = leading == null
+        ? labelWidget
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconTheme.merge(
+                data: IconThemeData(color: textColor, size: 18),
+                child: leading!,
+              ),
+              const SizedBox(width: 6),
+              Flexible(child: labelWidget),
+            ],
+          );
+
+    return Semantics(
+      container: true,
+      button: true,
+      enabled: onPressed != null,
+      label: label,
+      child: GestureDetector(
+        onTap: onPressed,
+        child: ExcludeSemantics(
+          child: Container(
+            width: width,
+            // [Accessibility] Grow with text instead of clipping the label.
+            constraints: const BoxConstraints(minHeight: 56),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+            decoration: ShapeDecoration(
+              color: backgroundColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
+            child: Center(child: content),
           ),
         ),
       ),
