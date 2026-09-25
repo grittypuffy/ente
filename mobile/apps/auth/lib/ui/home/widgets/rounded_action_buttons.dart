@@ -9,7 +9,6 @@ class RoundedButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final double? width;
   final RoundedButtonType type;
-  final Widget? leading;
 
   const RoundedButton({
     super.key,
@@ -17,7 +16,6 @@ class RoundedButton extends StatelessWidget {
     required this.onPressed,
     this.width,
     this.type = RoundedButtonType.primary,
-    this.leading,
   });
 
   @override
@@ -39,30 +37,6 @@ class RoundedButton extends StatelessWidget {
       ),
     };
 
-    final labelWidget = Text(
-      label,
-      textAlign: TextAlign.center,
-      style: textTheme.small.copyWith(
-        color: textColor,
-        fontWeight: FontWeight.w600,
-      ),
-    );
-    final content = leading == null
-        ? labelWidget
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              IconTheme.merge(
-                data: IconThemeData(color: textColor, size: 18),
-                child: leading!,
-              ),
-              const SizedBox(width: 6),
-              Flexible(child: labelWidget),
-            ],
-          );
-
     return Semantics(
       container: true,
       button: true,
@@ -82,7 +56,17 @@ class RoundedButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: Center(child: content),
+            child: Center(
+              // [Accessibility] Center wrapped label lines.
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: textTheme.small.copyWith(
+                  color: textColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ),
         ),
       ),

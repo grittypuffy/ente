@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('renders an optional leading icon and remains tappable', (
-    tester,
-  ) async {
+  testWidgets('renders the label and remains tappable', (tester) async {
     var tapped = false;
 
     await tester.pumpWidget(
@@ -19,7 +17,6 @@ void main() {
               child: RoundedButton(
                 label: 'Create account',
                 onPressed: () => tapped = true,
-                leading: const Icon(Icons.person_add_alt_1_outlined),
               ),
             ),
           ),
@@ -27,7 +24,6 @@ void main() {
       ),
     );
 
-    expect(find.byIcon(Icons.person_add_alt_1_outlined), findsOneWidget);
     expect(find.text('Create account'), findsOneWidget);
     expect(tester.takeException(), isNull);
 

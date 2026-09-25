@@ -154,7 +154,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           label: l10n.signUp,
                           onPressed: _navigateToSignUpPage,
                           type: RoundedButtonType.secondaryInverse,
-                          leading: const Icon(Icons.person_add_alt_1_outlined),
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -163,7 +162,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           label: l10n.logInLabel,
                           onPressed: _navigateToSignInPage,
                           type: RoundedButtonType.primaryInverse,
-                          leading: const Icon(Icons.login_outlined),
                         ),
                       ),
                     ],
@@ -271,7 +269,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       if (!mounted) return;
       result = await showChoiceActionSheet(
         context,
-        title: context.strings.warning,
+        title: context.strings.important,
         body: context.strings.offlineModeWarning,
         secondButtonLabel: context.strings.cancel,
         firstButtonLabel: context.strings.ok,
