@@ -2863,7 +2863,7 @@
   "offlineHomeSignupBannerDescription": "Encrypted backups across 3 locations to keep your memories safe.",
   "offlineHomeSignupBannerTitle": "Protect your memories forever",
   "offlineKeyUnavailableMessage": "Ente Auth cannot access the key for your offline codes.",
-  "offlineModeWarning": "You have chosen to proceed without backups. Please take manual backups to make sure your codes are safe.",
+  "offlineModeWarning": "You have chosen to proceed without creating an account. Please take manual backups to make sure your data is safe. You can create an account later in settings.",
   "offlineNameFaceBannerSubtitle": "Sign up to tag them and easily find their photos later.",
   "offlineNameFaceBannerTitle": "Give this face a name",
   "offlineSettingsBannerDesc": "Zero-knowledge encryption means your memories stay yours.",
@@ -4680,7 +4680,7 @@
   "usedSpace": "Used space",
   "usedYourCode": "used your code",
   "useMLToFindSimilarImages": "Remove items that look similar",
-  "useOffline": "Use without backups",
+  "useOffline": "Use without account",
   "useRecoveryKey": "Use recovery key",
   "@useRecoveryKey": {
     "description": "Use recovery key button label"
