@@ -1649,11 +1649,9 @@
       "name": {}
     }
   },
-  "featureBackupCodes": "End to end encrypted\nbackup and sync",
-  "featureOpenSource": "Open source and\naudited by security experts",
+  "featureBackupCodes": "Take control of your accounts",
   "featurePassAutomatically": "Pass them on automatically in emergencies",
   "featureSaveImportant": "Save your important documents and credentials",
-  "featureSearchEtc": "Search, Tags, Share,\nNext code and a lot more",
   "featureShareAnytime": "Share them anytime",
   "feed": "Feed",
   "feedToEngageWithFamily": "A feed to engage with family",

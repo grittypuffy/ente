@@ -177,8 +177,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Text(
                   l10n.useOffline,
                   textAlign: TextAlign.center,
-                  style: textTheme.bodyBold.copyWith(
-                    color: Colors.white.withValues(alpha: 0.95),
+                  style: textTheme.body.copyWith(
+                    color: Colors.white,
                     decoration: TextDecoration.underline,
                     decorationColor: Colors.white,
                   ),
@@ -195,8 +195,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Text(
                   l10n.developerSettings,
                   textAlign: TextAlign.center,
-                  style: textTheme.bodyMuted.copyWith(
-                    color: Colors.white.withValues(alpha: 0.85),
+                  style: textTheme.smallFaint.copyWith(
+                    color: Colors.white.withValues(alpha: 0.9),
                     decoration: TextDecoration.underline,
                     decorationColor: Colors.white,
                   ),
